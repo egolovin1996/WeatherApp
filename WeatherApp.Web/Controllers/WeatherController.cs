@@ -4,6 +4,7 @@ using WeatherApp.DataAccess.Interfaces;
 
 namespace WeatherApp.Web.Controllers
 {
+    [Route("api/weather")]
     public class WeatherController : Controller
     {
         private readonly IWeatherProvider _weatherProvider;
@@ -13,22 +14,16 @@ namespace WeatherApp.Web.Controllers
             _weatherProvider = weatherProvider;
         }
 
-        [HttpGet]
+        [HttpGet("getWeatherByCityName/{cityName}")]
         public async Task<string> GetWeatherByCityName(string cityName)
         {
-            return await _weatherProvider.GetWeatherByCityName(cityName);
+            return await _weatherProvider.GetWeatherByCityName(cityName, 12);
         }
         
-        [HttpGet]
-        public async Task<string> GetWeatherByCityId(int cityId)
-        {
-            return await _weatherProvider.GetWeatherByCityId(cityId);
-        }
-        
-        [HttpGet]
+        [HttpGet("getWeatherByCoords/{latitude}/{longitude}")]
         public async Task<string> GetWeatherByCoords(double latitude, double longitude)
         {
-            return await _weatherProvider.GetWeatherByCoords(latitude, longitude);
+            return await _weatherProvider.GetWeatherByCoords(latitude, longitude, 12);
         }
     }
 }

@@ -4,12 +4,8 @@ namespace WeatherApp.DataAccess.Interfaces
 {
     public interface IWeatherProvider
     {
-        Task<string> GetWeatherByCityName(string cityName);
+        Task<string> GetWeatherByCityName(string cityName, int daysCount);
 
-        Task<string> GetWeatherByCityId(int cityId);
-
-        Task<string> GetWeatherByCoords(double latitude, double longitude);
-        
-        
+        Task<string> GetWeatherByCoords(double latitude, double longitude, int daysCount);
     }
 }

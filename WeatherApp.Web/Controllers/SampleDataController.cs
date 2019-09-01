@@ -25,8 +25,6 @@ namespace WeatherApp.Web.Controllers
         [HttpGet("[action]")]
         public IEnumerable<WeatherForecast> WeatherForecasts()
         {
-             var t = _weatherProvider.GetWeatherByCityName("").Result;
-            
             var rng = new Random();
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {

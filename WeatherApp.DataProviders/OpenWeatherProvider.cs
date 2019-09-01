@@ -8,39 +8,36 @@ namespace WeatherApp.DataAccess
     public class OpenWeatherProvider: IWeatherProvider
     {
         private const string AppId = "&appid=9daaa9b770dea5a24cc4d34347dc924c";
-        private const string BaseApiUrl = "https://api.openweathermap.org/data/2.5/weather?";
+        private const string BaseApiUrl = "https://api.openweathermap.org/data/2.5/forecast?";
         
         private readonly HttpClient _client = new HttpClient();
         
-        public async Task<string> GetWeatherByCityName(string cityName)
+        public async Task<string> GetWeatherByCityName(string cityName, int daysCount)
         {
-            return await GetWeatherBase($"q={cityName}");
+            return await GetWeatherBase($"q={cityName}", daysCount);
         }
 
-        public async Task<string> GetWeatherByCityId(int cityId)
+        public async Task<string> GetWeatherByCoords(double latitude, double longitude, int daysCount)
         {
-            return await GetWeatherBase($"id={cityId}");
+            return await GetWeatherBase($"lat={latitude}&lon={longitude}", daysCount);
         }
 
-        public async Task<string> GetWeatherByCoords(double latitude, double longitude)
+        private async Task<string> GetWeatherBase(string parameters, int daysCount)
         {
-            return await GetWeatherBase($"lat={latitude}&lon={longitude}");
-        }
-
-        private async Task<string> GetWeatherBase(string parameters)
-        {
-            if (OpenWeatherCache.TryGetValue(parameters, out var result))
-            {
-                return result;
-            }
+            var parametersWithCount = $"{parameters}&cnt={daysCount}";
+            //if (OpenWeatherCache.TryGetValue(parametersWithCount, out var result))
+            //{
+            //    return result;
+            //}
             
-            var response = await _client.GetAsync(GetRequestString(parameters));
+            var response = await _client.GetAsync(GetRequestString(parametersWithCount));
             ValidateResponse(response);
-            
+
             return await response.Content.ReadAsStringAsync();
         }
 
-        private static string GetRequestString(string parameters) => $"{BaseApiUrl}{parameters}{AppId}";
+        private static string GetRequestString(string parameters) =>
+            $"{BaseApiUrl}{parameters}&units=metric{AppId}";
 
         private static void ValidateResponse(HttpResponseMessage response)
         {
