@@ -1,4 +1,5 @@
 using System;
+using System.Data;
 using System.Net.Http;
 using System.Threading.Tasks;
 using WeatherApp.DataAccess.Interfaces;
@@ -11,16 +12,12 @@ namespace WeatherApp.DataAccess
         private const string BaseApiUrl = "https://api.openweathermap.org/data/2.5/forecast?";
         
         private readonly HttpClient _client = new HttpClient();
-        
-        public async Task<string> GetWeatherByCityName(string cityName, int daysCount)
-        {
-            return await GetWeatherBase($"q={cityName}", daysCount);
-        }
 
-        public async Task<string> GetWeatherByCoords(double latitude, double longitude, int daysCount)
-        {
-            return await GetWeatherBase($"lat={latitude}&lon={longitude}", daysCount);
-        }
+        public async Task<string> GetWeatherByCityName(string cityName, int daysCount) =>
+            await GetWeatherBase($"q={cityName}", daysCount);
+
+        public async Task<string> GetWeatherByCoords(double latitude, double longitude, int daysCount) =>
+            await GetWeatherBase($"lat={latitude}&lon={longitude}", daysCount);
 
         private async Task<string> GetWeatherBase(string parameters, int daysCount)
         {
@@ -54,7 +51,7 @@ namespace WeatherApp.DataAccess
         {
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception();
+                throw new DataException("Open weather exception");
             }
         }
     }

@@ -25,7 +25,7 @@ namespace WeatherApp.DataAccess
 
         private static void ClearCacheHourly()
         {
-            if(_lastDateKey == GetDateKey()) return;
+            if(_lastDateKey.Equals(GetDateKey())) return;
 
             foreach (var key in  CachedValues.Keys.Where(k => k.Contains(_lastDateKey)))
             {
