@@ -25,15 +25,18 @@ namespace WeatherApp.DataAccess
         private async Task<string> GetWeatherBase(string parameters, int daysCount)
         {
             var parametersWithCount = $"{parameters}&cnt={daysCount}";
-            //if (OpenWeatherCache.TryGetValue(parametersWithCount, out var result))
-            //{
-            //    return result;
-            //}
+            if (OpenWeatherCache.TryGetValue(parametersWithCount, out var cachedResult))
+            {
+                return cachedResult;
+            }
             
             var response = await _client.GetAsync(GetRequestString(parametersWithCount));
             ValidateResponse(response);
 
-            return await response.Content.ReadAsStringAsync();
+            var result = await response.Content.ReadAsStringAsync();
+            OpenWeatherCache.AddValue(parametersWithCount, result);
+
+            return result;
         }
 
         private static string GetRequestString(string parameters) =>
