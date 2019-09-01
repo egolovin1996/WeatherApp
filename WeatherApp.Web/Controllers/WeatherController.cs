@@ -17,13 +17,13 @@ namespace WeatherApp.Web.Controllers
         [HttpGet("getWeatherByCityName/{cityName}")]
         public async Task<string> GetWeatherByCityName(string cityName)
         {
-            return await _weatherProvider.GetWeatherByCityName(cityName, 8);
+            return await _weatherProvider.GetWeatherByCityName(cityName, 2);
         }
         
         [HttpGet("getWeatherByCoords/{latitude}/{longitude}")]
         public async Task<string> GetWeatherByCoords(double latitude, double longitude)
         {
-            return await _weatherProvider.GetWeatherByCoords(latitude, longitude, 8);
+            return await _weatherProvider.GetWeatherByCoords(latitude, longitude, 2);
         }
     }
 }

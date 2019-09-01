@@ -24,7 +24,7 @@ namespace WeatherApp.DataAccess
 
         private async Task<string> GetWeatherBase(string parameters, int daysCount)
         {
-            var parametersWithCount = $"{parameters}&cnt={daysCount}";
+            var parametersWithCount = GetParametersWithPeriods(parameters, daysCount);
             if (OpenWeatherCache.TryGetValue(parametersWithCount, out var cachedResult))
             {
                 return cachedResult;
@@ -37,6 +37,14 @@ namespace WeatherApp.DataAccess
             OpenWeatherCache.AddValue(parametersWithCount, result);
 
             return result;
+        }
+
+        private static string GetParametersWithPeriods(string parameters, int daysCount)
+        {
+            const int periodsPerDay = 8;
+            var periodsCount = daysCount * periodsPerDay;
+            
+            return $"{parameters}&cnt={periodsCount}";
         }
 
         private static string GetRequestString(string parameters) =>
