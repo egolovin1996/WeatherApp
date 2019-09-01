@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WeatherApp.DataAccess;
 using WeatherApp.DataAccess.Interfaces;
+using WeatherApp.Web.Middleware;
 
 namespace WeatherApp.Web
 {
@@ -37,6 +38,8 @@ namespace WeatherApp.Web
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
+
+            app.UseMiddleware<ErrorHandlingMiddleware>();
 
             app.UseMvc(routes =>
             {

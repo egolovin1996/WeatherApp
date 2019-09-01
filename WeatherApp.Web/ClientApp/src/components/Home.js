@@ -1,80 +1,67 @@
-import React, { Component } from 'react';
-import {
-    ResponsiveContainer, AreaChart, Area, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-} from 'recharts';
+import React, { Component } from "react";
+import Table from "./Table";
+import Chart from "./Chart";
+import Loader from "react-loader-spinner";
+import weatherService from "./services/weatherService";
 
 export class Home extends Component {
-  static displayName = Home.name;
+    static displayName = Home.name;
 
-  constructor (props) {
-    super(props);
-    this.state = { forecasts: [], loading: true, cityName: "Moscow", latitude: 0, longitude: 0 };
+    constructor(props) {
+        super(props);
+        this.state = {
+            forecasts: [],
+            loading: true,
+            cityName: "Moscow",
+            latitude: 0,
+            longitude: 0
+        };
+    }
 
-    navigator.geolocation.getCurrentPosition(position => {
-        console.log(position);
-        fetch('api/weather/getWeatherByCoords/' + position.coords.latitude + '/'+ position.coords.longitude)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                this.setState({ forecasts: data.list, loading: false, cityName: data.city.name });
-            });
-    }, () => {
-        fetch('api/weather/getWeatherByCityName/' + this.state.cityName)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                this.setState({ forecasts: data.list, loading: false, cityName: data.city.name });
-            });
-    });
-  }
+    async componentDidMount() {
+        if (this.props.name) {
+            this.setStateByCityName(this.props.name);
+            return;
+        }
 
-  static renderForecastsTable (forecasts) {
-    return (
-      <table className='table table-striped'>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Summary</th>
-          </tr>
-        </thead>
-        <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.dt}>
-              <td>{forecast.dt_txt}</td>
-              <td>{forecast.main.temp}</td>
-              <td>{forecast.weather[0].main}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    );
-  }
+        navigator.geolocation.getCurrentPosition(
+            async position => {
+                const data = await weatherService.getWeatherByCoords(
+                    position.coords.latitude,
+                    position.coords.longitude
+                );
+                this.setState({
+                    forecasts: data.list,
+                    loading: false,
+                    cityName: data.city.name
+                });
+            },
+            () => this.setStateByCityName(this.state.cityName)
+        );
+    }
 
-  render () {
-    let contents = this.state.loading
-      ? <p><em>Loading...</em></p>
-      : Home.renderForecastsTable(this.state.forecasts);
+    async setStateByCityName(cityName) {
+        const data = await weatherService.getWeatherByCityName(cityName);
+        this.setState({
+            forecasts: data.list,
+            loading: false,
+            cityName: data.city.name
+        });
+    }
 
-      return (
-          <div >
-              <h1>Weather forecast in {this.state.cityName}</h1>
-              <div className="inline">
-                  
-                      <AreaChart
-                          width={1000}
-                          height={200}
-                          data={this.state.forecasts}
-                      >
-                          <Area type="monotone" dataKey="main.temp" fill="#8884d8" />
-                          <XAxis dataKey="dt_txt" />
-                          <YAxis />
-                          <Tooltip />
-                      </AreaChart>
-                  
-                  {contents}
-              </div>
-          </div>
-      );
-  }
+    render() {
+        return this.state.loading ? (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+                <Loader type="ThreeDots" color="black" height={80} width={80} />
+            </div>
+        ) : (
+            <div>
+                <div className="d-flex flex-column bd-highlight mb-3">
+                    <h1>Weather forecast in {this.state.cityName}</h1>
+                </div>
+                <Chart forecasts={this.state.forecasts} />
+                <Table forecasts={this.state.forecasts} />
+            </div>
+        );
+    }
 }
