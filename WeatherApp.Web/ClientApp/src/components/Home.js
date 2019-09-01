@@ -12,9 +12,8 @@ export class Home extends Component {
         this.state = {
             forecasts: [],
             loading: true,
-            cityName: "Moscow",
-            latitude: 0,
-            longitude: 0
+            cityName: "Yekaterinburg",
+            daysCount: 2
         };
     }
 
@@ -28,7 +27,8 @@ export class Home extends Component {
             async position => {
                 const data = await weatherService.getWeatherByCoords(
                     position.coords.latitude,
-                    position.coords.longitude
+                    position.coords.longitude,
+                    this.state.daysCount
                 );
                 this.setState({
                     forecasts: data.list,
@@ -41,7 +41,10 @@ export class Home extends Component {
     }
 
     async setStateByCityName(cityName) {
-        const data = await weatherService.getWeatherByCityName(cityName);
+        const data = await weatherService.getWeatherByCityName(
+            cityName,
+            this.state.daysCount
+        );
         this.setState({
             forecasts: data.list,
             loading: false,
@@ -51,13 +54,23 @@ export class Home extends Component {
 
     render() {
         return this.state.loading ? (
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    minHeight: "80vh"
+                }}
+            >
                 <Loader type="ThreeDots" color="black" height={80} width={80} />
             </div>
         ) : (
             <div>
                 <div className="d-flex flex-column bd-highlight mb-3">
-                    <h1>Weather forecast in {this.state.cityName}</h1>
+                    <h1>
+                        Weather forecast in {this.state.cityName} for {this.state.daysCount}{" "}
+                        days
+                    </h1>
                 </div>
                 <Chart forecasts={this.state.forecasts} />
                 <Table forecasts={this.state.forecasts} />

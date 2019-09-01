@@ -14,12 +14,12 @@ function baseRequest(url) {
     });
 }
 
-function getWeatherByCityName(name) {
-    return baseRequest(`getWeatherByCityName/${name}`);
+function getWeatherByCityName(name, daysCount) {
+    return baseRequest(`getWeatherByCityName/${name}/${daysCount}`);
 }
 
-function getWeatherByCoords(latitude, longitude) {
-    return baseRequest(`getWeatherByCoords/${latitude}/${longitude}`);
+function getWeatherByCoords(latitude, longitude, daysCount) {
+    return baseRequest(`getWeatherByCoords/${latitude}/${longitude}/${daysCount}`);
 }
 
 export default {

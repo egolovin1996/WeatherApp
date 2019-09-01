@@ -14,16 +14,16 @@ namespace WeatherApp.Web.Controllers
             _weatherProvider = weatherProvider;
         }
 
-        [HttpGet("getWeatherByCityName/{cityName}")]
-        public async Task<string> GetWeatherByCityName(string cityName)
+        [HttpGet("getWeatherByCityName/{cityName}/{daysCount}")]
+        public async Task<string> GetWeatherByCityName(string cityName, int daysCount)
         {
-            return await _weatherProvider.GetWeatherByCityName(cityName, 2);
+            return await _weatherProvider.GetWeatherByCityName(cityName, daysCount);
         }
         
-        [HttpGet("getWeatherByCoords/{latitude}/{longitude}")]
-        public async Task<string> GetWeatherByCoords(double latitude, double longitude)
+        [HttpGet("getWeatherByCoords/{latitude}/{longitude}/{daysCount}")]
+        public async Task<string> GetWeatherByCoords(double latitude, double longitude, int daysCount)
         {
-            return await _weatherProvider.GetWeatherByCoords(latitude, longitude, 2);
+            return await _weatherProvider.GetWeatherByCoords(latitude, longitude, daysCount);
         }
     }
 }

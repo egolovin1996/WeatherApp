@@ -8,8 +8,9 @@ export default class Table extends Component {
                     <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Temp. (C)</th>
-                        <th>Summary</th>
+                        <th>Temperature (C)</th>
+                        <th>Wind speed (meter/sec)</th>
+                        <th>Description</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -17,7 +18,8 @@ export default class Table extends Component {
                         <tr key={forecast.dt}>
                             <td>{forecast.dt_txt}</td>
                             <td>{forecast.main.temp}</td>
-                            <td>{forecast.weather[0].main}</td>
+                            <td>{forecast.wind.speed}</td>
+                            <td>{forecast.weather[0].description}</td>
                         </tr>
                     ))}
                     </tbody>
