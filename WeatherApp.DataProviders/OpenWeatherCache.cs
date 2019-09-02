@@ -1,18 +1,21 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace WeatherApp.DataAccess
 {
     internal static class OpenWeatherCache
     {
-        private static string _lastDateKey = GetDateKey();
+        private static volatile string _lastDateKey = GetDateKey();
             
-        private static readonly Dictionary<string, string> CachedValues = new Dictionary<string, string>();
+        private static readonly ConcurrentDictionary<string, string> CachedValues = new ConcurrentDictionary<string, string>();
 
         public static void AddValue(string parameters, string value)
         {
-            CachedValues.Add(GetKey(parameters), value);
+            CachedValues.TryAdd(GetKey(parameters), value);
         }
         
         public static bool TryGetValue(string parameters, out string result)
@@ -25,18 +28,20 @@ namespace WeatherApp.DataAccess
 
         private static void ClearCacheHourly()
         {
-            if(_lastDateKey.Equals(GetDateKey())) return;
+            var newKey = GetDateKey();
+            var previousKey = Interlocked.CompareExchange(ref _lastDateKey, newKey, GetDateKeyHourBefore());
+            if (previousKey.Equals(newKey)) return;
 
-            foreach (var key in  CachedValues.Keys.Where(k => k.Contains(_lastDateKey)))
+            foreach (var key in  CachedValues.Keys.Where(k => k.Contains(previousKey)))
             {
-                CachedValues.Remove(key);
+                CachedValues.TryRemove(key, out _);
             }
-
-            _lastDateKey = GetDateKey();
         }
 
         private static string GetKey(string parameters) => $"{GetDateKey()}{parameters}";
 
-        private static string GetDateKey() => $"{DateTime.Now:MM/dd/HH}";
+        private static string GetDateKey() => string.Intern($"{DateTime.Now:MM/dd/HH}");
+
+        private static string GetDateKeyHourBefore() => string.Intern($"{DateTime.Now.AddHours(-1):MM/dd/HH}");
     }
 }
