@@ -1,7 +1,9 @@
 # WeatherApp
+
 Веб приложение на ASP.NET Core и React для просмотра погоды.
 
 ## Запуск
+
 Для запуска приложения можно воспользоваться командой:
 
 `dotnet run --project ./WeatherApp.Web/WeatherApp.Web.csproj`
